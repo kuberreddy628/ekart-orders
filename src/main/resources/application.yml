@@ -1,0 +1,8 @@
+resilience4j:
+  circuitbreaker:
+    instance:
+      employeeService:
+        failureRateThreshold: 50
+      waitDurationInOpenState: 10s
+      slidingWindowSize: 5
+      permittedNumberOfCallsInHalfopenState: 3

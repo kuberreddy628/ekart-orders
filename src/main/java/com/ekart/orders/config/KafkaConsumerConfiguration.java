@@ -25,9 +25,13 @@ public class KafkaConsumerConfiguration {
 
 	private static Map<String, Object> baseConsumerProps(Environment env) {
 		Map<String, Object> props = new HashMap<>();
+		String bootstrapServers =
+				env.getProperty("spring.kafka.bootstrap-servers");
+
+		System.out.println("Kafka Bootstrap Servers = " + bootstrapServers);
 		props.put(
 				ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-				env.getProperty("spring.kafka.bootstrap-servers", "localhost:9092"));
+				bootstrapServers);
 		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 		props.put(
 				ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,

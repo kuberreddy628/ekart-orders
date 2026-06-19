@@ -59,7 +59,7 @@ public class OrdersController {
     }
 
     @GetMapping("/ordersByCustomer/{customerID}")
-    public ResponseEntity<?> getAllOrdersOfCustomer(@PathVariable("customerID") Long customerID) {
+    public ResponseEntity<List<OrderItemDetailsResponseDTO>> getAllOrdersOfCustomer(@PathVariable("customerID") Long customerID) {
         logger.info("Received request to get orders of customer with ID:{}", customerID);
         return ResponseEntity.ok(orderService.getAllOrdersOfCustomer(customerID));
     }

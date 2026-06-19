@@ -366,28 +366,35 @@ public class OrderServiceImpl implements OrderService {
             }
                 @Override
                 public List<OrderItemDetailsResponseDTO> getAllOrdersOfCustomer(Long customerID) {
-                    logger.info("Received request to get all orders by customerID:{}", customerID);
-                    Orders orders = repository.findByCustomerId(customerID).orElseThrow(()->new EntityNotFoundException("No Orders found for the given customerID :" + customerID));
-                   /* if(orders == null){
-                        throw new EntityNotFoundException("No Orders found for the given customerID"+customerID);
-                    }*/
-                    logger.info("Retrieved partial order details with customerID:{}", orders.getCustomerId());
-                    logger.info("Getting all the details of customer by orderID:{}", orders.getOrderId());
-                    Orders orders1 = repository.findById(orders.getOrderId()).orElseThrow(()->new EntityNotFoundException("No Orders found for the given customerID:{}"+customerID));
-                    logger.info("Retrieved all the product details of customer with orderID:{}", orders1.getOrderId());
+                    logger.info("Received request to get all orders for customerID: {}", customerID);
 
-                    List<OrderItemDetailsResponseDTO> itemslist = new ArrayList();
-                    List<OrderItems> orderItems = orders1.getOrderItems();
-                    for (OrderItems items : orderItems) {
-                        OrderItemDetailsResponseDTO responseDTO = new OrderItemDetailsResponseDTO();
-                        responseDTO.setProductId(items.getProductId());
-                        responseDTO.setPrice(items.getPrice());
-                        responseDTO.setQuantity(items.getQuantity());
-                        responseDTO.setTotalPrice(items.getTotalPrice());
+                    List<Orders> ordersList = repository.findAllByCustomerId(customerID);
 
-                        itemslist.add(responseDTO);
+                    if (ordersList.isEmpty()) {
+                        throw new EntityNotFoundException(
+                                "No Orders found for customerID: " + customerID);
                     }
-                    return itemslist;
+
+                    List<OrderItemDetailsResponseDTO> itemsList = new ArrayList<>();
+
+                    for (Orders order : ordersList) {
+
+                        for (OrderItems item : order.getOrderItems()) {
+
+                            OrderItemDetailsResponseDTO responseDTO =
+                                    new OrderItemDetailsResponseDTO();
+
+                            responseDTO.setProductId(item.getProductId());
+                            responseDTO.setPrice(item.getPrice());
+                            responseDTO.setQuantity(item.getQuantity());
+                            responseDTO.setTotalPrice(item.getTotalPrice());
+                            responseDTO.setStatus(order.getStatus().toString());
+
+                            itemsList.add(responseDTO);
+                        }
+                    }
+
+                    return itemsList;
                 }
                     @Override
                     public List<OrderDetailsResponseDTO> getAllOrders() {

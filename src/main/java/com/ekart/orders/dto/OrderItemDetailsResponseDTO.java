@@ -8,6 +8,7 @@ public class OrderItemDetailsResponseDTO {
     private Long quantity;
     private BigDecimal price;
     private BigDecimal totalPrice;
+    private String status;
 
     public Long getProductId() {
         return productId;
@@ -39,5 +40,13 @@ public class OrderItemDetailsResponseDTO {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getStatus() {
+        return status;
     }
 }

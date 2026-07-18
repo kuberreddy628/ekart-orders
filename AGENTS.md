@@ -35,10 +35,23 @@ This project is a Spring Boot microservice for order management in an e-commerce
 - **Feign Clients**: For synchronous calls to inventory and possibly other services.
 - **Database**: MySQL (see `pom.xml` and JPA entities).
 
+## Kafka Configuration Details
+- **Producer Configuration** (`KafkaProducerSerializationConfig.java`):
+  - Uses `JacksonJsonSerializer` with `setAddTypeInfo(false)` to send JSON without `@class` metadata (ensures other microservices can deserialize into their own POJOs).
+  - Defines `ProducerFactory<String, Object>` as `@Primary` bean with proper generic types.
+  - Spring Boot's `KafkaAutoConfiguration` automatically creates `kafkaTemplate` bean using the provided `ProducerFactory`.
+  - **Key gotcha**: ProducerFactory generic type must be `<String, Object>` (not `<Object, Object>`). String is the key type, Object is the value type.
+  
+- **Consumer Configuration** (`KafkaConsumerConfiguration.java`):
+  - Separate consumer factory and listener container factory for each event type (inventory, payment, shipping).
+  - Uses `JacksonJsonDeserializer` with `addTrustedPackages("com.ekart")` to deserialize incoming JSON.
+  - No type headers needed; deserialization type is determined by the listener container factory configuration.
+
 ## Example: Adding a New Fulfillment Event
 1. Define the event class in `event/fulfillment/`.
 2. Add a consumer factory and listener container factory in `KafkaConsumerConfiguration.java`.
 3. Add handling logic in the appropriate service or listener.
+4. Ensure the new event class is in the `com.ekart` package (for trusted deserialization).
 
 ## Key Files/Directories
 - `controller/OrdersController.java`: REST API entry points
